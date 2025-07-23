@@ -45,7 +45,7 @@ resource "aws_iam_role_policy" "ecs_secrets_access" {
         Action = [
           "secretsmanager:GetSecretValue"
         ],
-        Resource = "arn:aws:secretsmanager:ap-south-1:442740305597:secret:appwrite-devops-appwrite-env-*"
+        Resource = var.appwrite_env_secret_arn
       }
     ]
   })

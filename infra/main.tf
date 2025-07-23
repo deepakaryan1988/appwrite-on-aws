@@ -71,6 +71,7 @@ module "ecs_appwrite" {
 module "iam" {
   source  = "../terraform/iam"
   project = var.project
+  appwrite_env_secret_arn = module.secrets.appwrite_env_secret_arn
 }
 
 module "ecs_appwrite_service" {
