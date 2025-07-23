@@ -28,6 +28,16 @@ output "appwrite_env_secret_arn" {
   value = data.aws_secretsmanager_secret.appwrite_env.arn
 }
 
+module "ecs_cluster" {
+  source  = "../terraform/ecs/cluster"
+  project = var.project
+}
+
+module "cloudwatch" {
+  source  = "../terraform/cloudwatch"
+  project = var.project
+}
+
 module "ecs_appwrite" {
   source = "../terraform/ecs/appwrite"
   aws_region = var.aws_region
