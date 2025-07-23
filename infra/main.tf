@@ -52,12 +52,13 @@ module "ecs_appwrite" {
   aws_region = var.aws_region
   project    = var.project
 
-  container_image     = "appwrite/appwrite:1.5.4"
-  log_group           = "/ecs/appwrite"
-  cpu                 = "512"
-  memory              = "1024"
-  execution_role_arn  = module.iam.execution_role_arn     # coming soon
-  task_role_arn       = module.iam.task_role_arn          # coming soon
+  container_image      = "appwrite/appwrite:1.5.4"
+  log_group            = "/ecs/appwrite"
+  cpu                  = "512"
+  memory               = "1024"
+  execution_role_arn   = module.iam.execution_role_arn
+  task_role_arn        = module.iam.task_role_arn
+  alb_arn              = module.alb.alb_arn
 
   env_secrets = {
     APPWRITE_DB_HOST           = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_DB_HOST::"
@@ -76,3 +77,20 @@ module "iam" {
   project = var.project
 }
 
+module "ecs_appwrite_service" {
+  source = "../terraform/ecs/appwrite_service"
+
+  project              = var.project
+  ecs_cluster_id       = module.ecs_cluster.cluster_id
+  task_definition_arn  = module.ecs_appwrite.task_definition_arn
+
+  subnet_ids           = module.network.public_subnet_ids
+  security_group_ids   = [module.alb.service_sg_id]
+  vpc_id               = module.network.vpc_id
+
+  alb_target_group_arn = module.alb.target_group_arn
+  alb_listener_arn     = module.alb.listener_arn
+  alb_arn              = module.alb.alb_arn
+
+  desired_count        = 1
+}

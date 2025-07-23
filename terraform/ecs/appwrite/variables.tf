@@ -19,3 +19,8 @@ variable "env_secrets" {
   type = map(string)
   description = "Map of environment variable name → Secrets Manager ARN"
 }
+
+variable "alb_arn" {
+  description = "ARN of the ALB"
+  type        = string
+}
