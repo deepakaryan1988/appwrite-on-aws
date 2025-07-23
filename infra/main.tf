@@ -3,10 +3,12 @@ provider "aws" {
 }
 
 module "network" {
-  source     = "../terraform/network"
-  aws_region = var.aws_region
-  project    = var.project
+  source              = "../terraform/network"
+  aws_region          = var.aws_region
+  project             = var.project
+  public_subnet_cidrs = var.public_subnet_cidrs
 }
+
 
 module "ecr" {
   source     = "../terraform/ecr"
@@ -36,6 +38,13 @@ module "ecs_cluster" {
 module "cloudwatch" {
   source  = "../terraform/cloudwatch"
   project = var.project
+}
+
+module "alb" {
+  source             = "../terraform/alb"
+  project            = var.project
+  vpc_id             = module.network.vpc_id
+  public_subnet_ids  = module.network.public_subnet_ids
 }
 
 module "ecs_appwrite" {
