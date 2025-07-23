@@ -5,3 +5,7 @@ variable "aws_region" {
 variable "project" {
   default = "appwrite-devops"
 }
+
+variable "env_vars" {
+  type = map(string)
+}
