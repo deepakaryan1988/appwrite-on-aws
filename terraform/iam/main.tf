@@ -32,3 +32,21 @@ resource "aws_iam_role" "ecs_task" {
     }]
   })
 }
+
+resource "aws_iam_role_policy" "ecs_secrets_access" {
+  name = "ecs-secrets-access"
+  role = aws_iam_role.ecs_task_execution.name
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = "arn:aws:secretsmanager:ap-south-1:442740305597:secret:appwrite-devops-appwrite-env-*"
+      }
+    ]
+  })
+}

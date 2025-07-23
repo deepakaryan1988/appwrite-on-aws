@@ -22,12 +22,8 @@ module "secrets" {
   env_vars = var.env_vars
 }
 
-data "aws_secretsmanager_secret" "appwrite_env" {
-  name = "${var.project}-appwrite-env"
-}
-
 output "appwrite_env_secret_arn" {
-  value = data.aws_secretsmanager_secret.appwrite_env.arn
+  value = module.secrets.appwrite_env_secret_arn
 }
 
 module "ecs_cluster" {
@@ -61,13 +57,13 @@ module "ecs_appwrite" {
   alb_arn              = module.alb.alb_arn
 
   env_secrets = {
-    APPWRITE_DB_HOST           = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_DB_HOST::"
-    APPWRITE_REDIS_HOST        = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_REDIS_HOST::"
-    APPWRITE_PROJECTS_STATS    = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_PROJECTS_STATS::"
-    APPWRITE_USAGE_STATS       = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_USAGE_STATS::"
-    APPWRITE_FUNCTIONS_ENV     = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_FUNCTIONS_ENV::"
-    APPWRITE_FUNCTIONS_TIMEOUT = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_FUNCTIONS_TIMEOUT::"
-    APPWRITE_HOSTNAME          = "${data.aws_secretsmanager_secret.appwrite_env.arn}:APPWRITE_HOSTNAME::"
+    APPWRITE_DB_HOST           = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_DB_HOST::"
+    APPWRITE_REDIS_HOST        = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_REDIS_HOST::"
+    APPWRITE_PROJECTS_STATS    = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_PROJECTS_STATS::"
+    APPWRITE_USAGE_STATS       = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_USAGE_STATS::"
+    APPWRITE_FUNCTIONS_ENV     = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_FUNCTIONS_ENV::"
+    APPWRITE_FUNCTIONS_TIMEOUT = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_FUNCTIONS_TIMEOUT::"
+    APPWRITE_HOSTNAME          = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_HOSTNAME::"
   }
 
 }
