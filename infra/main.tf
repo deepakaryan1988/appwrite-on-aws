@@ -17,26 +17,24 @@ module "ecr" {
   project    = var.project
 }
 
+module "redis" {
+  source     = "../terraform/redis"
+  project    = var.project
+  vpc_id     = module.network.vpc_id
+  subnet_ids = module.network.public_subnet_ids
+  ecs_sg_id  = module.alb.service_sg_id
+}
+
 module "secrets" {
-  source  = "../terraform/secrets"
-  project = var.project
-
-  depends_on = [module.rds]  # ✅ Force RDS to complete first
-
-  env_vars = {
-    APPWRITE_DB_HOST           = trimsuffix(module.rds.db_endpoint, ":3306")
-    APPWRITE_DB_PORT           = "3306"
-    APPWRITE_DB_USER           = var.db_username
-    APPWRITE_DB_PASS           = var.db_password
-    APPWRITE_DB_SCHEMA         = var.db_name
-
-    APPWRITE_REDIS_HOST        = "localhost"
-    APPWRITE_PROJECTS_STATS    = "enabled"
-    APPWRITE_USAGE_STATS       = "enabled"
-    APPWRITE_FUNCTIONS_ENV     = "production"
-    APPWRITE_FUNCTIONS_TIMEOUT = "60"
-    APPWRITE_HOSTNAME          = "localhost"
-  }
+  source     = "../terraform/secrets"
+  project    = var.project
+  env_vars = merge(
+    {
+      APPWRITE_REDIS_HOST = module.redis.redis_endpoint
+    },
+    var.env_vars
+  )
+  depends_on = [module.redis]
 }
 
 output "appwrite_env_secret_arn" {
