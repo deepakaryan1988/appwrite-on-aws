@@ -1,5 +1,5 @@
 resource "aws_secretsmanager_secret" "appwrite_env" {
-  name = "${var.project}-appwrite-env"
+  name = "${var.project}-appwrite-env-v2"
 }
 
 resource "aws_secretsmanager_secret_version" "env_values" {

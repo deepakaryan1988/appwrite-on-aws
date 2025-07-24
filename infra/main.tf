@@ -7,6 +7,7 @@ module "network" {
   aws_region          = var.aws_region
   project             = var.project
   public_subnet_cidrs = var.public_subnet_cidrs
+  ecs_sg_id = module.alb.service_sg_id
 }
 
 
@@ -17,9 +18,25 @@ module "ecr" {
 }
 
 module "secrets" {
-  source     = "../terraform/secrets"
-  project    = var.project
-  env_vars = var.env_vars
+  source  = "../terraform/secrets"
+  project = var.project
+
+  depends_on = [module.rds]  # ✅ Force RDS to complete first
+
+  env_vars = {
+    APPWRITE_DB_HOST           = trimsuffix(module.rds.db_endpoint, ":3306")
+    APPWRITE_DB_PORT           = "3306"
+    APPWRITE_DB_USER           = var.db_username
+    APPWRITE_DB_PASS           = var.db_password
+    APPWRITE_DB_SCHEMA         = var.db_name
+
+    APPWRITE_REDIS_HOST        = "localhost"
+    APPWRITE_PROJECTS_STATS    = "enabled"
+    APPWRITE_USAGE_STATS       = "enabled"
+    APPWRITE_FUNCTIONS_ENV     = "production"
+    APPWRITE_FUNCTIONS_TIMEOUT = "60"
+    APPWRITE_HOSTNAME          = "localhost"
+  }
 }
 
 output "appwrite_env_secret_arn" {
@@ -90,4 +107,16 @@ module "ecs_appwrite_service" {
   alb_arn              = module.alb.alb_arn
 
   desired_count        = 1
+}
+
+module "rds" {
+  source = "../terraform/rds"
+
+  db_name     = var.db_name
+  db_username = var.db_username
+  db_password = var.db_password
+
+  vpc_id     = module.network.vpc_id
+  subnet_ids = module.network.public_subnet_ids
+  rds_sg_id  = module.network.rds_sg_id
 }

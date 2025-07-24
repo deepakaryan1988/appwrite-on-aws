@@ -28,6 +28,7 @@ resource "aws_ecs_service" "appwrite" {
     container_port   = 80
   }
 
+  health_check_grace_period_seconds = 120
+
   depends_on = [var.alb_listener_arn]
 }
-
