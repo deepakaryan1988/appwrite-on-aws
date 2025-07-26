@@ -9,8 +9,8 @@ resource "aws_ecs_task_definition" "appwrite" {
 
   container_definitions = jsonencode([
     {
-      name  = "appwrite"
-      image = var.container_image
+      name      = "appwrite"
+      image     = var.container_image
       essential = true
 
       portMappings = [
@@ -20,6 +20,22 @@ resource "aws_ecs_task_definition" "appwrite" {
           protocol      = "tcp"
         }
       ]
+
+      # Health check
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost/v1/health || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 60
+      }
+
+      # Resource limits
+      memoryReservation = floor(tonumber(var.memory) * 0.8)
+      
+      # Security
+      readonlyRootFilesystem = false  # Appwrite needs write access
+      user = "1000:1000"  # Run as non-root user
 
       logConfiguration = {
         logDriver = "awslogs"
@@ -34,6 +50,18 @@ resource "aws_ecs_task_definition" "appwrite" {
         for key, value in var.env_secrets : {
           name      = key
           valueFrom = value
+        }
+      ]
+      
+      # Environment variables that don't need to be secret
+      environment = [
+        {
+          name  = "APPWRITE_WORKER_PER_CORE"
+          value = "6"
+        },
+        {
+          name  = "APPWRITE_LOGGING_PROVIDER"
+          value = "stdout"
         }
       ]
     }

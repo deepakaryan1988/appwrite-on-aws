@@ -31,15 +31,42 @@ resource "aws_elasticache_subnet_group" "redis" {
 resource "aws_elasticache_cluster" "redis" {
   cluster_id           = "${var.project}-redis"
   engine               = "redis"
-  engine_version       = "6.x"
+  engine_version       = "7.0"
   node_type            = var.node_type
   num_cache_nodes      = 1
   parameter_group_name = var.parameter_group_name
   port                 = 6379
   subnet_group_name    = aws_elasticache_subnet_group.redis.name
   security_group_ids   = [aws_security_group.redis.id]
+  
+  # Security settings
+  az_mode = "single-az"
+  
+  # Maintenance and backup
+  maintenance_window       = "sun:05:00-sun:06:00"
+  snapshot_retention_limit = 5
+  snapshot_window         = "03:00-05:00"
+  
+  # Enable logging for troubleshooting
+  log_delivery_configuration {
+    destination      = aws_cloudwatch_log_group.redis.name
+    destination_type = "cloudwatch-logs"
+    log_format       = "text"
+    log_type         = "slow-log"
+  }
 
   tags = {
     Name = "${var.project}-redis"
+    Environment = "production"
+  }
+}
+
+# CloudWatch Log Group for Redis
+resource "aws_cloudwatch_log_group" "redis" {
+  name              = "/aws/elasticache/redis/${var.project}"
+  retention_in_days = 7
+
+  tags = {
+    Name = "${var.project}-redis-logs"
   }
 } 

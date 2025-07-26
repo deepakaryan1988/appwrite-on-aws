@@ -27,5 +27,5 @@ variable "node_type" {
 variable "parameter_group_name" {
   description = "Redis parameter group name"
   type        = string
-  default     = "default.redis6.x"
+  default     = "default.redis7"
 } 

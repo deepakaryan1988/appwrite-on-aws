@@ -1,0 +1,50 @@
+# Production Terraform Configuration Example
+# Copy this file to terraform.tfvars and customize the values
+
+# AWS Configuration
+aws_region = "us-east-1"  # Change to your preferred region
+project    = "appwrite-prod"
+
+# Network Configuration
+public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+
+# Application Configuration
+appwrite_hostname = "your-domain.com"  # Replace with your actual domain
+appwrite_image    = "appwrite/appwrite:1.6.0"
+
+# Infrastructure Sizing (Production)
+ecs_cpu           = "1024"  # 1 vCPU
+ecs_memory        = "2048"  # 2GB RAM
+redis_node_type   = "cache.t3.small"  # Production-ready Redis
+rds_instance_type = "db.t3.small"      # Production-ready RDS
+
+# Database Configuration
+db_name     = "appwrite"
+db_username = "appwriteroot"
+db_password = "CHANGEME-SecurePassword123!"  # Use a strong password!
+
+# Environment
+environment = "prod"
+
+# Tags (Customize for your organization)
+common_tags = {
+  Project     = "Appwrite"
+  Environment = "production"
+  ManagedBy   = "Terraform"
+  Owner       = "DevOps-Team"
+  CostCenter  = "Engineering"
+  Backup      = "Required"
+}
+
+# Optional: SSL Certificate ARN (for HTTPS)
+# acm_certificate_arn = "arn:aws:acm:region:account:certificate/certificate-id"
+
+# Environment Variables (Add your custom Appwrite configuration)
+env_vars = {
+  APPWRITE_PROJECTS_STATS    = "enabled"
+  APPWRITE_USAGE_STATS       = "enabled"
+  APPWRITE_FUNCTIONS_ENV     = "production"
+  APPWRITE_FUNCTIONS_TIMEOUT = "900"
+  # Add other Appwrite-specific environment variables here
+}
