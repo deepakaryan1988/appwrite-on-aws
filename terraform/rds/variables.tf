@@ -35,3 +35,8 @@ variable "instance_class" {
   type        = string
   default     = "db.t3.micro"
 }
+
+variable "monitoring_role_arn" {
+  description = "IAM role ARN for RDS enhanced monitoring"
+  type        = string
+}

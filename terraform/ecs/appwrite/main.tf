@@ -23,7 +23,7 @@ resource "aws_ecs_task_definition" "appwrite" {
 
       # Health check
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost/v1/health || exit 1"]
+        command     = ["CMD-SHELL", "curl -f http://localhost:80/v1/health || exit 1"]
         interval    = 30
         timeout     = 5
         retries     = 3
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "appwrite" {
       
       # Security
       readonlyRootFilesystem = false  # Appwrite needs write access
-      user = "1000:1000"  # Run as non-root user
+      # user = "1000:1000"  # Temporarily commented out to run as root
 
       logConfiguration = {
         logDriver = "awslogs"

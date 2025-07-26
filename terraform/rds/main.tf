@@ -34,8 +34,9 @@ resource "aws_db_instance" "this" {
   storage_encrypted = true
   
   # Monitoring
-  performance_insights_enabled = true
+  performance_insights_enabled = false  # Not supported on t3.micro
   monitoring_interval         = 60
+  monitoring_role_arn         = var.monitoring_role_arn
   
   # Deletion protection for production
   deletion_protection = true

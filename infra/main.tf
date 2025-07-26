@@ -121,13 +121,22 @@ module "ecs_appwrite" {
   alb_arn              = module.alb.alb_arn
 
   env_secrets = {
-    APPWRITE_DB_HOST           = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_DB_HOST::"
-    APPWRITE_REDIS_HOST        = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_REDIS_HOST::"
-    APPWRITE_PROJECTS_STATS    = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_PROJECTS_STATS::"
-    APPWRITE_USAGE_STATS       = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_USAGE_STATS::"
-    APPWRITE_FUNCTIONS_ENV     = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_FUNCTIONS_ENV::"
+    _APP_ENV                  = "${module.secrets.appwrite_env_secret_arn}:_APP_ENV::"
+    _APP_OPENSSL_KEY_V1       = "${module.secrets.appwrite_env_secret_arn}:_APP_OPENSSL_KEY_V1::"
+    _APP_DB_ROOT_PASS         = "${module.secrets.appwrite_env_secret_arn}:_APP_DB_ROOT_PASS::"
+    _APP_DB_HOST              = "${module.secrets.appwrite_env_secret_arn}:_APP_DB_HOST::"
+    _APP_DB_USER              = "${module.secrets.appwrite_env_secret_arn}:_APP_DB_USER::"
+    _APP_DB_PASS              = "${module.secrets.appwrite_env_secret_arn}:_APP_DB_PASS::"
+    _APP_DB_SCHEMA            = "${module.secrets.appwrite_env_secret_arn}:_APP_DB_SCHEMA::"
+    _APP_REDIS_HOST           = "${module.secrets.appwrite_env_secret_arn}:_APP_REDIS_HOST::"
+    _APP_REDIS_PORT           = "${module.secrets.appwrite_env_secret_arn}:_APP_REDIS_PORT::"
+    _APP_SYSTEM_EMAIL_NAME    = "${module.secrets.appwrite_env_secret_arn}:_APP_SYSTEM_EMAIL_NAME::"
+    _APP_SYSTEM_EMAIL_ADDRESS = "${module.secrets.appwrite_env_secret_arn}:_APP_SYSTEM_EMAIL_ADDRESS::"
+    _APP_SYSTEM_SERVER_HOST   = "${module.secrets.appwrite_env_secret_arn}:_APP_SYSTEM_SERVER_HOST::"
+    APPWRITE_PROJECTS_STATS   = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_PROJECTS_STATS::"
+    APPWRITE_USAGE_STATS      = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_USAGE_STATS::"
+    APPWRITE_FUNCTIONS_ENV    = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_FUNCTIONS_ENV::"
     APPWRITE_FUNCTIONS_TIMEOUT = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_FUNCTIONS_TIMEOUT::"
-    APPWRITE_HOSTNAME          = "${module.secrets.appwrite_env_secret_arn}:APPWRITE_HOSTNAME::"
   }
 
 }
@@ -166,4 +175,5 @@ module "rds" {
   vpc_id     = module.network.vpc_id
   subnet_ids = module.network.private_subnet_ids
   rds_sg_id  = module.network.rds_sg_id
+  monitoring_role_arn = "arn:aws:iam::442740305597:role/rds-monitoring-role"
 }
